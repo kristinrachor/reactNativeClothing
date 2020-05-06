@@ -30,9 +30,12 @@ const DATA = [
 
 
 
-export default function HomeScreen() {
+export default function HomeScreen({navigation}) {
   function onPressItem(){
     alert('You tapped the button!');
+    console.warn("TESTTT", this.props);
+    console.warn(this.props);
+    navigation.navigate('Person');
     //this.props.navigation.navigate('Person')
   };
 

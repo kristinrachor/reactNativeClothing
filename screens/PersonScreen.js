@@ -1,5 +1,13 @@
 import React from 'react';
 import { ExpoConfigView } from '@expo/samples';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Button,
+} from 'react-native';
 
 export default function PersonScreen() {
     return(
