@@ -8,68 +8,87 @@ import {
   FlatList,
   Button,
 } from 'react-native';
-
-
+import ListItem from '../components/ListItem'
 import { MonoText } from '../components/StyledText';
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-];
+class HomeScreen extends React.Component {
 
-export default function HomeScreen({navigation}) {
-  function onPressItem(){
-    navigation.navigate('Person', {name: 'Jane'});
+  constructor (props){
+    super(props);
+
+    this.state={
+      counter: 0,
+      personList: [
+        {
+          id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+          title: 'First Item',
+        },
+        {
+          id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+          title: 'Second Item',
+        },
+        {
+          id: '58694a0f-3da1-471f-bd96-145571e29d72',
+          title: 'Third Item44',
+        }
+      ]
+    }
+  }
+
+  onPressItem = () => {
+    this.props.navigation.navigate('Person', {name: 'Jane'});
   };
 
-  function addItem(){
+  addItem = () => {
     alert('Add item')
+    let {personList, counter} = this.state;
+    personList.push({id: counter, title: `person ${counter}`})
+    counter++;
+    this.setState({
+      personList: personList, 
+      counter: counter
+    });
   }
   
-  function Item({ title }){
+  /*Item = ({ title }) => {
     return (
       <View style={styles.item}>
         <Text style={styles.title} onPress={onPressItem}>{title}</Text>
       </View>
     );
-  }
+  }*/
 
-  return (
-    <View style={styles.container}>
-        <View style={styles.welcomeContainer}>
-          <Text> Family Clothing Sizes App </Text>
-          <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
+  render(){
+    return (
+      <View style={styles.container}>
+          <View style={styles.welcomeContainer}>
+            <Text> Family Clothing Sizes App </Text>
+            <Image
+              source={
+                __DEV__
+                  ? require('../assets/images/robot-dev.png')
+                  : require('../assets/images/robot-prod.png')
+              }
+              style={styles.welcomeImage}
+            />
+          </View>
+          <Button
+              onPress={this.addItem}
+              title="Add person"
           />
-        </View>
-        <Button
-            onPress={addItem}
-            title="Add person"
-        />
 
-        <FlatList
-          data={DATA}
-          renderItem={({ item }) => <Item title={item.title}/>}
-          keyExtractor={item => item.id}
-        />
-    </View>
-  );
+          <FlatList
+            data={this.state.personList}
+            renderItem={({ item }) => <ListItem title={item.title} onPressItem={this.onPressItem}/>}
+            keyExtractor={item => item.id}
+          />
+      </View>
+    );
+  }
 }
+
+export default HomeScreen;
+
 
 HomeScreen.navigationOptions = {
   header: null,

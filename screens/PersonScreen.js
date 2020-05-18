@@ -14,7 +14,7 @@ import { AsyncStorage } from 'react-native';
 
 class PersonScreen extends React.Component {
   constructor(props) {
-   super(props);
+    super(props);
     this.state = {
       shirtSize: 0,
       pantSize: 0,
