@@ -9,14 +9,13 @@ import {
   Button,
   TextInput
 } from 'react-native';
+import { AsyncStorage } from 'react-native';
+
 
 class PersonScreen extends React.Component {
-//export default function PersonScreen({props}) {
   constructor(props) {
    super(props);
     this.state = {
-      counter: 0,
-      value: "kristin",
       shirtSize: 0,
       pantSize: 0,
       shoeSize: 0,
@@ -24,17 +23,48 @@ class PersonScreen extends React.Component {
   }
 
   componentDidMount(){
-    //console.warn("BLAHHHH")
+      this.retrieveItem('shirtSize')
   };
 
-  onChangeText = (text, item) => {
-    console.warn('blah', this.props.navigation.state.params.name)
+  async retrieveItem(key) {
+    try {
+      const retrievedItem =  await AsyncStorage.getItem(key);
+      const item = JSON.parse(retrievedItem);
+      console.warn("item", item);
+      if(item !== {}){
+        this.setState({
+          shirtSize: item.shirtSize,
+          pantSize: item.pantSize,
+          shoeSize: item.shoeSize
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  storeData = async () => {
+    try {
+      await AsyncStorage.setItem('sizes', JSON.stringify(this.state))
+    } catch (e) {
+      // saving error
+      console.error("DIDINT SAVE");
+    }
+  }
+
+  saveSizes(){
+    this.storeData()
+  }
+
+  onChangeText(text, item){
     if(item === "shirt"){
       this.setState({shirtSize: text})
+    }else if(item === "pants"){
+      this.setState({pantSize: text})
+    }else if(item === "shoes"){
+      this.setState({shoeSize: text})
     }
-    this.setState({value: text});
   }
-  //const [value, onChangeText] = React.useState('Useless Placeholder');
 
   render(){
     return(
@@ -43,6 +73,9 @@ class PersonScreen extends React.Component {
 
         <Text> Shirt Size </Text>
         <TextInput
+          keyboardType="numeric"
+          returnKeyType="go"
+          maxLength={3}
           style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
           onChangeText={text => this.onChangeText(text, "shirt")}
           value={this.state.shirtSize}
@@ -50,6 +83,9 @@ class PersonScreen extends React.Component {
 
         <Text> Pants Size </Text>
          <TextInput
+          keyboardType="numeric"
+          returnKeyType="go"
+          maxLength={3}
           style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
           onChangeText={text => this.onChangeText(text, "pants")}
           value={this.state.pantSize}
@@ -57,10 +93,21 @@ class PersonScreen extends React.Component {
 
         <Text> Shoe Size </Text>
          <TextInput
+          keyboardType="numeric"
+          returnKeyType="go"
+          maxLength={3}
           style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
           onChangeText={text => this.onChangeText(text, "shoes")}
           value={this.state.shoeSize}
         />
+
+        <Button
+          onPress={() => this.saveSizes()}
+          title="Save Sizes"
+          color="#841584"
+          accessibilityLabel="Save your clothing sizes for ___"
+        />
+
       </View>
     );
   }
@@ -69,5 +116,5 @@ class PersonScreen extends React.Component {
 export default PersonScreen;
 
 PersonScreen.navigationOptions = {
-  title: "this.props.navigation.state.params.name",
+  title: "Person sizes",
 };
