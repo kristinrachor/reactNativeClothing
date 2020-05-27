@@ -7,6 +7,9 @@ import {
   View,
   FlatList,
   Button,
+  Modal,
+  TextInput,
+  TouchableHighlight,
 } from 'react-native';
 import ListItem from '../components/ListItem'
 import { MonoText } from '../components/StyledText';
@@ -17,47 +20,45 @@ class HomeScreen extends React.Component {
     super(props);
 
     this.state={
-      counter: 0,
+      counter: 1,
+      modalVisible: false,
+      currentModalText: '',
       personList: [
         {
-          id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-          title: 'First Item',
-        },
-        {
-          id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-          title: 'Second Item',
-        },
-        {
-          id: '58694a0f-3da1-471f-bd96-145571e29d72',
-          title: 'Third Item44',
+          id: '0',
+          title: 'My Sizes'
         }
       ]
     }
   }
 
-  onPressItem = () => {
-    this.props.navigation.navigate('Person', {name: 'Jane'});
+  onPressItem = (item) => {
+    console.warn("BLAHHH", item)
+    this.props.navigation.navigate('Person', {name: item.title});
   };
 
-  addItem = () => {
-    alert('Add item')
-    let {personList, counter} = this.state;
-    personList.push({id: counter, title: `person ${counter}`})
+  openModal = () =>  {
+    this.setState({
+      modalVisible: true,
+    });
+  }
+
+  onChangeTextModal(text){
+    this.setState({currentModalText: text})
+  }
+
+  createNewPerson(){
+    let {personList, counter, currentModalText} = this.state;
+    personList.push({id: counter, title: currentModalText})
     counter++;
     this.setState({
+      modalVisible: false,
       personList: personList, 
-      counter: counter
+      counter: counter,
+      currentModalText: '',
     });
   }
   
-  /*Item = ({ title }) => {
-    return (
-      <View style={styles.item}>
-        <Text style={styles.title} onPress={onPressItem}>{title}</Text>
-      </View>
-    );
-  }*/
-
   render(){
     return (
       <View style={styles.container}>
@@ -73,15 +74,43 @@ class HomeScreen extends React.Component {
             />
           </View>
           <Button
-              onPress={this.addItem}
+              onPress={this.openModal}
               title="Add person"
           />
 
           <FlatList
             data={this.state.personList}
-            renderItem={({ item }) => <ListItem title={item.title} onPressItem={this.onPressItem}/>}
+            renderItem={({ item }) => <ListItem title={item.title} onPressItem={() =>this.onPressItem(item)}/>}
             keyExtractor={item => item.id}
           />
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}> Add Person </Text>
+              <TextInput
+                returnKeyType="go"
+                maxLength={30}
+                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                onChangeText={text => this.onChangeTextModal(text)}
+                value={this.state.currentModalText}
+              />
+              <TouchableHighlight
+                style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+                onPress={() => {this.createNewPerson()}}
+              >
+                <Text style={styles.textStyle}>Create</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -130,4 +159,41 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    width: '75%',
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 5,
+    padding: 10,
+    elevation: 2
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  }
 });
