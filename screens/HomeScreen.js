@@ -12,6 +12,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import ListItem from '../components/ListItem'
+import { AsyncStorage } from 'react-native';
 import { MonoText } from '../components/StyledText';
 
 class HomeScreen extends React.Component {
@@ -29,6 +30,24 @@ class HomeScreen extends React.Component {
           title: 'My Sizes'
         }
       ]
+    }
+  }
+
+  componentDidMount(){
+    this.retrieveItem('personList')
+  };
+
+  async retrieveItem(key) {
+    try {
+      const retrievedItem =  await AsyncStorage.getItem(key);
+      const item = JSON.parse(retrievedItem);
+      if(item.length != 0){
+        this.setState({
+          personList: item
+        });
+      }
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -51,12 +70,24 @@ class HomeScreen extends React.Component {
     let {personList, counter, currentModalText} = this.state;
     personList.push({id: counter, title: currentModalText})
     counter++;
+    this.storeData(personList)
     this.setState({
       modalVisible: false,
       personList: personList, 
       counter: counter,
       currentModalText: '',
     });
+  }
+
+  storeData = async (personList) => {
+    try {
+      console.warn("saving");
+      console.warn(personList)
+      await AsyncStorage.setItem('personList', JSON.stringify(personList))
+    } catch (e) {
+      // saving error
+      console.error(e);
+    }
   }
   
   render(){

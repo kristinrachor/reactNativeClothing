@@ -1,11 +1,8 @@
 import React from 'react';
-import { ExpoConfigView } from '@expo/samples';
+//import { ExpoConfigView } from '@expo/samples';
 import {
-  Image,
-  StyleSheet,
   Text,
   View,
-  FlatList,
   Button,
   TextInput
 } from 'react-native';
@@ -16,36 +13,48 @@ class PersonScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      shirtSize: 0,
-      pantSize: 0,
-      shoeSize: 0,
+      shirtSize: "0",
+      pantSize: "0",
+      shoeSize: "0",
     }
   }
 
   componentDidMount(){
-      this.retrieveItem('shirtSize')
+    let key = "sizes" + this.props.navigation.state.params.id;
+      this.retrieveItem(key)
   };
 
   async retrieveItem(key) {
     try {
       const retrievedItem =  await AsyncStorage.getItem(key);
-      const item = JSON.parse(retrievedItem);
-      console.warn("item", item);
-      if(item !== {}){
+      if(this.retrieveItem){
+        const item = JSON.parse(retrievedItem);
+        console.warn("item", item);
+        console.warn(item);
+        if(item !== null && item.shirtSize !== null && item.pantSize !== null && item.shoeSize !== null){
+          this.setState({
+            shirtSize: item.shirtSize,
+            pantSize: item.pantSize,
+            shoeSize: item.shoeSize
+          });
+        }
+      }else{
+        console.warn("no retrievedItem")
         this.setState({
-          shirtSize: item.shirtSize,
-          pantSize: item.pantSize,
-          shoeSize: item.shoeSize
-        });
+            shirtSize: "0",
+            pantSize: "0",
+            shoeSize: "0",
+        })
       }
     } catch (error) {
-      console.log(error.message);
+      console.error(error)
     }
   }
 
   storeData = async () => {
     try {
-      await AsyncStorage.setItem('sizes', JSON.stringify(this.state))
+      let key = "sizes" + this.props.navigation.state.params.id;
+      await AsyncStorage.setItem(key, JSON.stringify(this.state))
     } catch (e) {
       // saving error
       console.error("DIDINT SAVE");
