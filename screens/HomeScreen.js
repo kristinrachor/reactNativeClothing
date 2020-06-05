@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import ListItem from '../components/ListItem'
 import { AsyncStorage } from 'react-native';
+import { Icon } from 'react-native-elements'
 import { MonoText } from '../components/StyledText';
 
 class HomeScreen extends React.Component {
@@ -35,6 +36,7 @@ class HomeScreen extends React.Component {
 
   componentDidMount(){
     this.retrieveItem('personList')
+    this.retrieveItem('counter')
   };
 
   async retrieveItem(key) {
@@ -43,7 +45,7 @@ class HomeScreen extends React.Component {
       const item = JSON.parse(retrievedItem);
       if(item.length != 0){
         this.setState({
-          personList: item
+          [key]: item
         });
       }
     } catch (error) {
@@ -52,8 +54,7 @@ class HomeScreen extends React.Component {
   }
 
   onPressItem = (item) => {
-    console.warn("BLAHHH", item)
-    this.props.navigation.navigate('Person', {name: item.title});
+    this.props.navigation.navigate('Person', {name: item.title, id: item.id, personList: this.state.personList});
   };
 
   openModal = () =>  {
@@ -70,7 +71,8 @@ class HomeScreen extends React.Component {
     let {personList, counter, currentModalText} = this.state;
     personList.push({id: counter, title: currentModalText})
     counter++;
-    this.storeData(personList)
+    this.storeData(personList, "personList")
+    this.storeData(counter, "counter")
     this.setState({
       modalVisible: false,
       personList: personList, 
@@ -79,11 +81,11 @@ class HomeScreen extends React.Component {
     });
   }
 
-  storeData = async (personList) => {
+  storeData = async (item, name) => {
     try {
       console.warn("saving");
-      console.warn(personList)
-      await AsyncStorage.setItem('personList', JSON.stringify(personList))
+      console.warn(name)
+      await AsyncStorage.setItem(name, JSON.stringify(item))
     } catch (e) {
       // saving error
       console.error(e);
@@ -111,7 +113,15 @@ class HomeScreen extends React.Component {
 
           <FlatList
             data={this.state.personList}
-            renderItem={({ item }) => <ListItem title={item.title} onPressItem={() =>this.onPressItem(item)}/>}
+            renderItem={({ item }) => 
+              <ListItem 
+                title={item.title} 
+                rightIcon={{           
+                  name:'av-timer'
+                }}
+                onPressItem={() =>this.onPressItem(item)}
+              />
+            }
             keyExtractor={item => item.id}
           />
 

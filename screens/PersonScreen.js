@@ -7,6 +7,8 @@ import {
   TextInput
 } from 'react-native';
 import { AsyncStorage } from 'react-native';
+import { Icon } from 'react-native-elements'
+
 
 
 class PersonScreen extends React.Component {
@@ -21,7 +23,7 @@ class PersonScreen extends React.Component {
 
   componentDidMount(){
     let key = "sizes" + this.props.navigation.state.params.id;
-      this.retrieveItem(key)
+    this.retrieveItem(key)
   };
 
   async retrieveItem(key) {
@@ -29,8 +31,6 @@ class PersonScreen extends React.Component {
       const retrievedItem =  await AsyncStorage.getItem(key);
       if(this.retrieveItem){
         const item = JSON.parse(retrievedItem);
-        console.warn("item", item);
-        console.warn(item);
         if(item !== null && item.shirtSize !== null && item.pantSize !== null && item.shoeSize !== null){
           this.setState({
             shirtSize: item.shirtSize,
@@ -51,7 +51,7 @@ class PersonScreen extends React.Component {
     }
   }
 
-  storeData = async () => {
+  storeSizes = async () => {
     try {
       let key = "sizes" + this.props.navigation.state.params.id;
       await AsyncStorage.setItem(key, JSON.stringify(this.state))
@@ -61,8 +61,21 @@ class PersonScreen extends React.Component {
     }
   }
 
+  deleteUser = async () => {
+    try {
+      let personList = this.props.navigation.state.params.personList;
+      let id = this.props.navigation.state.params.id;
+      personList.splice(id, 1);
+      await AsyncStorage.setItem('personList', JSON.stringify(personList))
+      this.props.navigation.navigate('Home');
+    } catch (e) {
+      // saving error
+      console.error("DIDINT SAVE");
+    }
+  }
+
   saveSizes(){
-    this.storeData()
+    this.storeSizes()
   }
 
   onChangeText(text, item){
@@ -116,6 +129,11 @@ class PersonScreen extends React.Component {
           color="#841584"
           accessibilityLabel="Save your clothing sizes for ___"
         />
+        <Icon
+            raised
+            name='trash'
+            type='font-awesome'
+            onPress={() => this.deleteUser()} />
 
       </View>
     );
