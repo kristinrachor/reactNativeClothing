@@ -4,7 +4,10 @@ import {
   Text,
   View,
   Button,
-  TextInput
+  TextInput,
+  StyleSheet,
+  TouchableHighlight,
+
 } from 'react-native';
 import { AsyncStorage } from 'react-native';
 import { Icon } from 'react-native-elements'
@@ -12,12 +15,15 @@ import { Icon } from 'react-native-elements'
 
 
 class PersonScreen extends React.Component {
+
   constructor(props) {
     super(props);
+
     this.state = {
       shirtSize: "0",
       pantSize: "0",
       shoeSize: "0",
+      edit: false
     }
   }
 
@@ -76,6 +82,15 @@ class PersonScreen extends React.Component {
 
   saveSizes(){
     this.storeSizes()
+    this.setState({
+      edit: false
+    })
+  }
+
+  editFields(){
+    this.setState({
+      edit: true
+    })
   }
 
   onChangeText(text, item){
@@ -89,51 +104,83 @@ class PersonScreen extends React.Component {
   }
 
   render(){
+    //let editItems = 'none'// this.state.edit ? 'block' : 'none';
+    //let staticItems = 'block'//this.state.edit ? 'none' : 'block';
+
     return(
       <View>
         <Text> {this.props.navigation.state.params.name} </Text>
 
-        <Text> Shirt Size </Text>
-        <TextInput
-          keyboardType="numeric"
-          returnKeyType="go"
-          maxLength={3}
-          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={text => this.onChangeText(text, "shirt")}
-          value={this.state.shirtSize}
-        />
+        <View style={styles.sideBySideContainer}>
+          <Text> Shirt Size </Text>
 
-        <Text> Pants Size </Text>
-         <TextInput
-          keyboardType="numeric"
-          returnKeyType="go"
-          maxLength={3}
-          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={text => this.onChangeText(text, "pants")}
-          value={this.state.pantSize}
-        />
+          {this.state.edit ?
+            <TextInput
+              keyboardType="numeric"
+              returnKeyType="go"
+              maxLength={5}
+              style={styles.textBox}
+              onChangeText={text => this.onChangeText(text, "shirt")}
+              value={this.state.shirtSize}
+            />
+            :
+            <Text> {this.state.shirtSize} </Text>
+          }
+        </View>
+        <View style={styles.sideBySideContainer}>
+          <Text> Pants Size </Text>
+          {this.state.edit ?
+            <TextInput
+              keyboardType="numeric"
+              returnKeyType="go"
+              maxLength={5}
+              style={styles.textBox}
+              onChangeText={text => this.onChangeText(text, "pants")}
+              value={this.state.pantSize}
+            />
+            :
+            <Text> {this.state.pantSize} </Text>
+          }
+        </View>
+        <View style={styles.sideBySideContainer}>
+            <Text> Shoe Size </Text>
+            {this.state.edit ?
+            <TextInput
+              keyboardType="numeric"
+              returnKeyType="go"
+              maxLength={5}
+              style={styles.textBox}
+              onChangeText={text => this.onChangeText(text, "shoe")}
+              value={this.state.shoeSize}
+            />
+            :
+            <Text> {this.state.shoeSize} </Text>
+          }
+        </View>
 
-        <Text> Shoe Size </Text>
-         <TextInput
-          keyboardType="numeric"
-          returnKeyType="go"
-          maxLength={3}
-          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={text => this.onChangeText(text, "shoes")}
-          value={this.state.shoeSize}
-        />
-
-        <Button
-          onPress={() => this.saveSizes()}
-          title="Save Sizes"
-          color="#841584"
-          accessibilityLabel="Save your clothing sizes for ___"
-        />
-        <Icon
-            raised
-            name='trash'
-            type='font-awesome'
-            onPress={() => this.deleteUser()} />
+        <View style={styles.sideBySideContainer}>
+          <TouchableHighlight
+            style={styles.button}
+            onPress={() => this.deleteUser()}
+          >
+            <Text style={styles.textStyle}>Delete Person</Text>
+          </TouchableHighlight>
+          {this.state.edit ?
+            <TouchableHighlight
+              style={styles.button}
+              onPress={() => this.saveSizes()}
+            >
+              <Text style={styles.textStyle}>Save Sizes</Text>
+            </TouchableHighlight>
+            :
+            <TouchableHighlight
+              style={styles.button}
+              onPress={() => {this.editFields()}}
+            >
+              <Text style={styles.textStyle}>Edit</Text>
+            </TouchableHighlight>
+          }
+        </View>
 
       </View>
     );
@@ -145,3 +192,87 @@ export default PersonScreen;
 PersonScreen.navigationOptions = {
   title: "Person sizes",
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  sideBySideContainer: {
+    paddingTop: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  contentContainer: {
+    paddingTop: 30,
+  },
+  welcomeContainer: {
+    alignItems: 'center',
+    marginTop: '30%',
+    marginBottom: '30%',
+  },
+  welcomeImage: {
+    width: 150,
+    height: 110,
+    resizeMode: 'contain',
+    marginTop: 3,
+    marginLeft: -10,
+  },
+  helpLinkText: {
+    fontSize: 14,
+    color: '#2e78b7',
+  },
+  item: {
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    padding: 20,
+    marginVertical: 5,
+  },
+  header: {
+    fontSize: 32,
+  },
+  title: {
+    fontSize: 24,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    width: '75%',
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
+  button: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 5,
+    padding: 10,
+    margin: 10
+  },
+  textStyle: {
+    color: "black",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  textBox:{
+    height: 40, 
+    borderColor: 'gray', 
+    borderWidth: 1, 
+    width: 150
+  }
+});

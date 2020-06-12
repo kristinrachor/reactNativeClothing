@@ -63,6 +63,12 @@ class HomeScreen extends React.Component {
     });
   }
 
+  closeModal = () =>  {
+    this.setState({
+      modalVisible: false,
+    });
+  }
+
   onChangeTextModal(text){
     this.setState({currentModalText: text})
   }
@@ -96,11 +102,10 @@ class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
           <View style={styles.welcomeContainer}>
-            <Text> Family Clothing Sizes App </Text>
             <Image
               source={
                 __DEV__
-                  ? require('../assets/images/robot-dev.png')
+                  ? require('../assets/images/family-sizes-logo.png')
                   : require('../assets/images/robot-prod.png')
               }
               style={styles.welcomeImage}
@@ -139,16 +144,24 @@ class HomeScreen extends React.Component {
               <TextInput
                 returnKeyType="go"
                 maxLength={30}
-                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                style={styles.textBox}
                 onChangeText={text => this.onChangeTextModal(text)}
                 value={this.state.currentModalText}
               />
-              <TouchableHighlight
-                style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-                onPress={() => {this.createNewPerson()}}
-              >
-                <Text style={styles.textStyle}>Create</Text>
-              </TouchableHighlight>
+              <View style={styles.buttonContainer}>
+                <TouchableHighlight
+                  style={styles.openButton}
+                  onPress={() => {this.closeModal()}}
+                >
+                  <Text style={styles.textStyle}>Cancel</Text>
+                </TouchableHighlight>
+                <TouchableHighlight
+                  style={styles.openButton}
+                  onPress={() => {this.createNewPerson()}}
+                >
+                  <Text style={styles.textStyle}>Create</Text>
+                </TouchableHighlight>
+              </View>
             </View>
           </View>
         </Modal>
@@ -170,6 +183,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  buttonContainer: {
+    paddingTop: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   contentContainer: {
     paddingTop: 30,
   },
@@ -179,8 +197,8 @@ const styles = StyleSheet.create({
     marginBottom: '30%',
   },
   welcomeImage: {
-    width: 100,
-    height: 80,
+    width: 150,
+    height: 110,
     resizeMode: 'contain',
     marginTop: 3,
     marginLeft: -10,
@@ -223,18 +241,23 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   openButton: {
-    backgroundColor: "#F194FF",
+    backgroundColor: '#f5f5f5',
     borderRadius: 5,
     padding: 10,
-    elevation: 2
+    margin: 10
   },
   textStyle: {
-    color: "white",
-    fontWeight: "bold",
+    color: "black",
     textAlign: "center"
   },
   modalText: {
     marginBottom: 15,
     textAlign: "center"
+  },
+  textBox:{
+    height: 40, 
+    borderColor: 'gray', 
+    borderWidth: 1, 
+    width: 150
   }
 });
